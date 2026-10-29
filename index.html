@@ -1,0 +1,1310 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Irish Beef Quote Comparator (Sample Demo)</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border-color: #e5e7eb;
+      --primary: #15803d;
+      --primary-hover: #166534;
+      --primary-light: #f0fdf4;
+      --accent-badge: #dcfce7;
+      --accent-badge-text: #166534;
+      --warning-bg: #fffbeb;
+      --warning-border: #fcd34d;
+      --warning-text: #b45309;
+      --danger-bg: #fef2f2;
+      --danger-border: #fca5a5;
+      --danger-text: #b91c1c;
+      --shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+      --radius: 12px;
+      --font-stack: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #111827;
+        --card-bg: #1f2937;
+        --text-main: #f9fafb;
+        --text-muted: #9ca3af;
+        --border-color: #374151;
+        --primary: #22c55e;
+        --primary-hover: #16a34a;
+        --primary-light: #064e3b;
+        --accent-badge: #065f46;
+        --accent-badge-text: #34d399;
+        --warning-bg: #451a03;
+        --warning-border: #78350f;
+        --warning-text: #fde68a;
+        --danger-bg: #450a0a;
+        --danger-border: #7f1d1d;
+        --danger-text: #fca5a5;
+        --shadow: 0 1px 3px 0 rgba(0,0,0,0.5);
+        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-stack);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Top Links & Banners */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .back-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .sample-banner {
+      background-color: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      color: var(--warning-text);
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Controls & Form Styles */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 480px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .form-group .help-text {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    input, select, button {
+      font-family: inherit;
+      font-size: 16px; /* Prevents iOS auto-zoom */
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      width: 100%;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid var(--primary);
+      border-color: transparent;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      border: none;
+      transition: background-color 0.2s, opacity 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-color);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 13px;
+      width: auto;
+    }
+
+    /* Segmented Radio Control */
+    .segmented-control {
+      display: flex;
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .segmented-control label {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px;
+      margin: 0;
+      user-select: none;
+    }
+
+    .segmented-control input[type="radio"] {
+      display: none;
+    }
+
+    .segmented-control input[type="radio"]:checked + span {
+      background-color: var(--card-bg);
+      color: var(--primary);
+      box-shadow: var(--shadow);
+      display: block;
+      border-radius: 6px;
+      padding: 8px 0;
+    }
+
+    .segmented-control span {
+      display: block;
+      padding: 8px 0;
+    }
+
+    /* Highlights & Winner Card */
+    .winner-card {
+      background: linear-gradient(135deg, var(--primary-light), var(--card-bg));
+      border: 2px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .winner-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background-color: var(--primary);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 999px;
+      letter-spacing: 0.5px;
+    }
+
+    .winner-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .net-hero {
+      font-size: 28px;
+      font-weight: 900;
+      margin: 8px 0;
+    }
+
+    .hero-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Rankings List */
+    .ranking-item {
+      display: flex;
+      flex-direction: column;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+      gap: 6px;
+    }
+
+    .ranking-item:last-child {
+      border-bottom: none;
+    }
+
+    .ranking-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .factory-name {
+      font-weight: 700;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rank-num {
+      background-color: var(--border-color);
+      color: var(--text-main);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .rank-1 .rank-num {
+      background-color: var(--primary);
+      color: #fff;
+    }
+
+    .ranking-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      background-color: var(--bg-color);
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .metric-val {
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .metric-lbl {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    /* Difference Worth */
+    .diff-box {
+      background-color: var(--bg-color);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .diff-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .diff-val {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Price Board Cards */
+    .factory-board-card {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background-color: var(--card-bg);
+    }
+
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .board-prices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 8px 0;
+    }
+
+    .price-pill {
+      background-color: var(--bg-color);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .warning-tag {
+      display: inline-block;
+      background-color: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      color: var(--warning-text);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+
+    /* Modals & History */
+    .modal-overlay {
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background-color: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .history-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 8px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .svg-chart {
+      width: 100%;
+      height: 40px;
+      margin-top: 6px;
+    }
+
+    /* Toggles & Small Helpers */
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .toggle-group input[type="checkbox"] {
+      width: auto;
+    }
+
+    .assumptions-box {
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 16px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <a href="#" class="back-link">&larr; Back to landing page</a>
+    <button class="btn-secondary btn-sm" onclick="confirmReset()">Reset Sample Data</button>
+  </div>
+
+  <!-- Banner -->
+  <div class="sample-banner">
+    SAMPLE DATA – made-up factories, prices and farm. Not real quotes.
+  </div>
+
+  <!-- DEMO PRESETS BAR -->
+  <div class="card" style="border: 2px dashed var(--primary); background: rgba(21, 128, 61, 0.03);">
+    <div style="font-size:13px; font-weight:700; color:var(--primary); margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
+      <span>⚡ DEMO SCENARIOS & QUICK PRESETS</span>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+      <button class="btn-secondary btn-sm" onclick="applyDemoScenario('default')">Standard 40 Steers</button>
+      <button class="btn-secondary btn-sm" onclick="applyDemoScenario('heifers')">Heavy Heifers (380kg)</button>
+      <button class="btn-secondary btn-sm" onclick="applyDemoScenario('highDiesel')">High Fuel (€2.15/L)</button>
+      <button class="btn-secondary btn-sm" onclick="applyDemoScenario('freshMarket')">Fresh Quotes Market</button>
+    </div>
+  </div>
+
+  <!-- MY CATTLE INPUTS -->
+  <div class="card">
+    <div class="card-title">My Cattle</div>
+    
+    <div class="form-group">
+      <label>Compare Animal Type</label>
+      <div class="segmented-control">
+        <label>
+          <input type="radio" name="animalType" value="steer" onchange="updateSettings()" id="typeSteer">
+          <span>Steer</span>
+        </label>
+        <label>
+          <input type="radio" name="animalType" value="heifer" onchange="updateSettings()" id="typeHeifer">
+          <span>Heifer</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label for="cattleCount">Number of Cattle</label>
+        <input type="number" id="cattleCount" min="1" max="500" oninput="updateSettings()">
+      </div>
+      <div class="form-group">
+        <label for="carcassWeight">Avg Carcass Weight (kg)</label>
+        <input type="number" id="carcassWeight" min="100" max="700" step="1" oninput="updateSettings()">
+        <span class="help-text">Factory deadweight per head</span>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label for="dieselPrice">Diesel Price (€/L)</label>
+        <input type="number" id="dieselPrice" step="0.01" min="0.50" max="4.00" oninput="updateSettings()">
+      </div>
+      <div class="form-group">
+        <label>Diesel Last Updated</label>
+        <div id="dieselDateDisplay" style="padding:10px; font-size:13px; color:var(--text-muted);"></div>
+      </div>
+    </div>
+    <div id="dieselError" class="warning-tag" style="display:none; margin-bottom:8px; color:var(--danger-text); border-color:var(--danger-border); background:var(--danger-bg);">
+      Enter a diesel price between €0.50 and €4.00 per litre
+    </div>
+    <div id="dieselWarning" class="warning-tag" style="display:none; margin-bottom:8px;">
+      Diesel price out of date (&gt;7 days) – check pump price
+    </div>
+
+    <div class="assumptions-box">
+      <strong>Assumptions:</strong> Lorry fuel usage: 0.35 L/km (round-trip) | Capacity: 20 cattle/load
+    </div>
+
+    <!-- CALCULATE ACTION BUTTONS & RESET -->
+    <div style="display: flex; gap: 8px; margin-top: 14px;">
+      <button class="btn-primary" style="padding: 12px; font-size: 16px; font-weight: 700; flex: 2;" onclick="calculateAndShowQuotes()">
+        🔍 Calculate & Compare Best Quotes
+      </button>
+      <button class="btn-secondary" style="padding: 12px; font-size: 14px; flex: 1;" onclick="resetCattleInputs()">
+        ↺ Reset Inputs
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULTS SECTION (Hidden until 'Calculate & Compare' is clicked) -->
+  <div id="resultsArea" style="display: none;">
+    <!-- Highest Paying Card -->
+    <div class="card winner-card" id="winnerCard">
+      <div class="winner-badge">Best Net Payoff</div>
+      <div style="font-size:12px; text-transform:uppercase; font-weight:700; color:var(--text-muted);" id="winnerHeaderType">TOP FACTORY (STEER)</div>
+      <div class="winner-title" id="winnerName">-</div>
+      <div class="net-hero" id="winnerNetTotal">€0</div>
+      <div class="hero-sub" id="winnerSubDetails">€0/head net after haulage</div>
+    </div>
+
+    <!-- Ranked Table -->
+    <div class="card" style="margin-top: 16px;">
+      <div class="card-title">
+        <span>Factory Rankings</span>
+      </div>
+
+      <div class="toggle-group">
+        <input type="checkbox" id="includeStale" onchange="renderApp()">
+        <label for="includeStale">Include out-of-date prices (&gt;7 days old)</label>
+      </div>
+
+      <div id="rankingsList" style="margin-top:12px;"></div>
+
+      <!-- Difference Worth -->
+      <div class="diff-box" id="diffBox">
+        <div class="diff-row">
+          <span>Vs. Lowest Ranked Factory:</span>
+          <span class="diff-val" id="diffLowest">+€0</span>
+        </div>
+        <div class="diff-row">
+          <span>Vs. Nearest Factory (<span id="nearestName">-</span>):</span>
+          <span class="diff-val" id="diffNearest">+€0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HELD & ACCEPTED QUOTES LOG -->
+  <div class="card">
+    <div class="card-title">
+      <span>My saved choices</span>
+      <button class="btn-secondary btn-sm" onclick="clearHeldQuotes()" id="clearHeldBtn" style="display:none;">Clear History</button>
+    </div>
+    <div id="heldQuotesList">
+      <div style="text-align:center; padding:12px; color:var(--text-muted); font-size:13px;">
+        No saved choices yet. Tap a factory in the comparison list and choose "Save this choice".
+      </div>
+    </div>
+  </div>
+
+  <!-- FACTORY PRICE BOARD -->
+  <div class="card">
+    <div class="card-title">
+      <span>Factory Price Board</span>
+      <span style="font-size:11px; font-weight:normal; color:var(--text-muted);">Sample prices – made up</span>
+    </div>
+    <div id="priceBoardList"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    Estimates only. Excludes bonuses, VAT and deductions. Not financial advice.
+  </footer>
+
+</div>
+
+<!-- UPDATE PRICE MODAL -->
+<div class="modal-overlay" id="updateModal">
+  <div class="modal">
+    <div class="modal-title" id="modalFactoryName">Update Factory Prices</div>
+    <div class="form-group">
+      <label for="modalSteerPrice">Steer Base Price (€/kg)</label>
+      <input type="number" id="modalSteerPrice" step="0.01" min="3.00" max="10.00">
+    </div>
+    <div class="form-group">
+      <label for="modalHeiferPrice">Heifer Base Price (€/kg)</label>
+      <input type="number" id="modalHeiferPrice" step="0.01" min="3.00" max="10.00">
+    </div>
+    <div id="modalError" class="warning-tag" style="display:none; color:var(--danger-text); border-color:var(--danger-border); background:var(--danger-bg);">
+      Prices must be between €3.00 and €10.00 per kg
+    </div>
+    <div style="display:flex; gap:8px; margin-top:16px;">
+      <button class="btn-primary" onclick="savePriceUpdate()">Save Prices</button>
+      <button class="btn-secondary" onclick="closeUpdateModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACCEPT / ALLOW QUOTE MODAL -->
+<div class="modal-overlay" id="acceptModal">
+  <div class="modal">
+    <div class="modal-title" id="acceptFactoryName">Factory Quote Selected</div>
+    <div id="acceptModalBody" style="font-size:14px; margin-bottom:16px; line-height:1.6;"></div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button class="btn-primary" style="padding:12px;" onclick="confirmAcceptQuote()">✅ Save this choice</button>
+      <button class="btn-secondary" onclick="closeAcceptModal()">Back to Comparison</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// INITIAL DATA & CONSTANTS
+const STORAGE_KEY = "irish_beef_quote_demo_v3";
+const DAYS_7_MS = 7 * 24 * 60 * 60 * 1000;
+
+let hasCalculated = false;
+let selectedQuoteForAccept = null;
+
+const DEFAULT_FACTORIES = [
+  { id: "f1", name: "Northfield Beef (sample)", distance: 18 },
+  { id: "f2", name: "Ardmore Processing (sample)", distance: 35 },
+  { id: "f3", name: "Midlands Meat Co. (sample)", distance: 52 },
+  { id: "f4", name: "Shannon Meats (sample)", distance: 74 },
+  { id: "f5", name: "East Coast Abattoir (sample)", distance: 96 }
+];
+
+function relativeIsoDate(daysAgo, hour = 10, min = 30) {
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
+  d.setHours(hour, min, 0, 0);
+  return d.toISOString();
+}
+
+function generateInitialHistory() {
+  return [
+    { id: "h1", factoryId: "f1", steerPrice: 6.35, heiferPrice: 6.40, timestamp: relativeIsoDate(1, 9, 15) },
+    { id: "h2", factoryId: "f1", steerPrice: 6.30, heiferPrice: 6.35, timestamp: relativeIsoDate(9, 11, 0) },
+    { id: "h3", factoryId: "f1", steerPrice: 6.25, heiferPrice: 6.30, timestamp: relativeIsoDate(20, 14, 20) },
+
+    { id: "h4", factoryId: "f2", steerPrice: 6.55, heiferPrice: 6.60, timestamp: relativeIsoDate(2, 10, 45) },
+    { id: "h5", factoryId: "f2", steerPrice: 6.50, heiferPrice: 6.55, timestamp: relativeIsoDate(12, 16, 10) },
+
+    { id: "h6", factoryId: "f3", steerPrice: 6.65, heiferPrice: 6.70, timestamp: relativeIsoDate(0, 8, 30) },
+    { id: "h7", factoryId: "f3", steerPrice: 6.60, heiferPrice: 6.65, timestamp: relativeIsoDate(6, 15, 0) },
+    { id: "h8", factoryId: "f3", steerPrice: 6.50, heiferPrice: 6.55, timestamp: relativeIsoDate(15, 10, 0) },
+
+    { id: "h9", factoryId: "f4", steerPrice: 6.70, heiferPrice: 6.75, timestamp: relativeIsoDate(9, 12, 0) },
+    { id: "h10", factoryId: "f4", steerPrice: 6.65, heiferPrice: 6.70, timestamp: relativeIsoDate(18, 9, 0) },
+
+    { id: "h11", factoryId: "f5", steerPrice: 6.60, heiferPrice: 6.65, timestamp: relativeIsoDate(4, 13, 15) },
+    { id: "h12", factoryId: "f5", steerPrice: 6.55, heiferPrice: 6.60, timestamp: relativeIsoDate(14, 11, 30) },
+    { id: "h13", factoryId: "f5", steerPrice: 6.45, heiferPrice: 6.50, timestamp: relativeIsoDate(28, 10, 0) }
+  ];
+}
+
+let appState = {
+  settings: {
+    animalType: "steer",
+    cattleCount: 40,
+    carcassWeight: 350,
+    dieselPrice: 1.70,
+    dieselTimestamp: relativeIsoDate(2, 14, 0),
+    lorryFuelLPerKm: 0.35,
+    cattlePerLoad: 20
+  },
+  factories: DEFAULT_FACTORIES,
+  priceHistory: [],
+  heldQuotes: []
+};
+
+// INITIALIZATION & UI SYNC HELPERS
+function initUI() {
+  document.getElementById("cattleCount").value = appState.settings.cattleCount;
+  document.getElementById("carcassWeight").value = appState.settings.carcassWeight;
+  document.getElementById("dieselPrice").value = appState.settings.dieselPrice;
+  
+  if (appState.settings.animalType === "heifer") {
+    document.getElementById("typeHeifer").checked = true;
+  } else {
+    document.getElementById("typeSteer").checked = true;
+  }
+
+  document.getElementById("dieselError").style.display = "none";
+  updateDieselDateDisplay();
+}
+
+function updateDieselDateDisplay() {
+  const ts = appState.settings.dieselTimestamp;
+  document.getElementById("dieselDateDisplay").textContent = formatIrishDateTime(ts);
+  const warn = document.getElementById("dieselWarning");
+  if (isStale(ts)) {
+    warn.style.display = "inline-block";
+  } else {
+    warn.style.display = "none";
+  }
+}
+
+function updateSettings() {
+  const count = parseInt(document.getElementById("cattleCount").value) || 1;
+  const weight = parseFloat(document.getElementById("carcassWeight").value) || 100;
+  const dieselRaw = parseFloat(document.getElementById("dieselPrice").value);
+  const animalType = document.querySelector('input[name="animalType"]:checked').value;
+
+  const dieselOk = !isNaN(dieselRaw) && dieselRaw >= 0.5 && dieselRaw <= 4.0;
+  document.getElementById("dieselError").style.display = dieselOk ? "none" : "inline-block";
+  if (dieselOk && dieselRaw !== appState.settings.dieselPrice) {
+    appState.settings.dieselPrice = dieselRaw;
+    appState.settings.dieselTimestamp = new Date().toISOString();
+    updateDieselDateDisplay();
+  }
+
+  appState.settings.cattleCount = count;
+  appState.settings.carcassWeight = weight;
+  appState.settings.animalType = animalType;
+
+  saveState();
+  if (hasCalculated) {
+    renderApp();
+  }
+}
+
+function calcHaulagePerAnimal(distanceKm) {
+  const { dieselPrice, lorryFuelLPerKm, cattlePerLoad } = appState.settings;
+  return (distanceKm * 2 * lorryFuelLPerKm * dieselPrice) / cattlePerLoad;
+}
+
+function calculateAndShowQuotes() {
+  hasCalculated = true;
+  document.getElementById("resultsArea").style.display = "block";
+  renderApp();
+  document.getElementById("resultsArea").scrollIntoView({ behavior: 'smooth' });
+}
+
+function applyDemoScenario(type) {
+  if (type === 'default') {
+    appState.settings.animalType = 'steer';
+    appState.settings.cattleCount = 40;
+    appState.settings.carcassWeight = 350;
+    appState.settings.dieselPrice = 1.70;
+  } else if (type === 'heifers') {
+    appState.settings.animalType = 'heifer';
+    appState.settings.cattleCount = 30;
+    appState.settings.carcassWeight = 380;
+    appState.settings.dieselPrice = 1.70;
+  } else if (type === 'highDiesel') {
+    appState.settings.dieselPrice = 2.15;
+    appState.settings.dieselTimestamp = new Date().toISOString();
+  } else if (type === 'freshMarket') {
+    const now = new Date().toISOString();
+    appState.priceHistory.push(
+      { id: "h_fresh_1", factoryId: "f1", steerPrice: 6.75, heiferPrice: 6.80, timestamp: now },
+      { id: "h_fresh_2", factoryId: "f4", steerPrice: 6.80, heiferPrice: 6.85, timestamp: now }
+    );
+  }
+  saveState();
+  initUI();
+  calculateAndShowQuotes();
+}
+
+// DATE FORMATTING HELPERS
+function formatIrishDateTime(isoOrDateStr) {
+  if (!isoOrDateStr) return "N/A";
+  const d = new Date(isoOrDateStr);
+  if (isNaN(d.getTime())) return "N/A";
+
+  const day = d.getDate();
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+
+  return `${day} ${month} ${year}, ${hours}:${minutes}`;
+}
+
+function isStale(timestamp) {
+  if (!timestamp) return true;
+  const time = new Date(timestamp).getTime();
+  if (isNaN(time)) return true;
+  return (Date.now() - time) > DAYS_7_MS;
+}
+
+// STORAGE MANAGEMENT
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.settings && parsed.priceHistory) {
+        appState = parsed;
+        if (!appState.heldQuotes) appState.heldQuotes = [];
+        
+        if (!appState.settings.dieselTimestamp) {
+          appState.settings.dieselTimestamp = appState.settings.dieselDate 
+            ? new Date(appState.settings.dieselDate).toISOString() 
+            : relativeIsoDate(2);
+        }
+
+        appState.priceHistory.forEach(h => {
+          if (!h.timestamp && h.date) {
+            h.timestamp = new Date(h.date).toISOString();
+          }
+        });
+
+        return;
+      }
+    }
+  } catch (e) {
+    console.warn("localStorage load error, falling back to defaults", e);
+  }
+  appState.priceHistory = generateInitialHistory();
+  appState.heldQuotes = [];
+  saveState();
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+  } catch (e) {
+    console.warn("localStorage save error", e);
+  }
+}
+
+function confirmReset() {
+  if (confirm("Reset all settings and prices back to default sample data?")) {
+    appState.settings = {
+      animalType: "steer",
+      cattleCount: 40,
+      carcassWeight: 350,
+      dieselPrice: 1.70,
+      dieselTimestamp: relativeIsoDate(2, 14, 0),
+      lorryFuelLPerKm: 0.35,
+      cattlePerLoad: 20
+    };
+    appState.factories = DEFAULT_FACTORIES;
+    appState.priceHistory = generateInitialHistory();
+    appState.heldQuotes = [];
+    saveState();
+    initUI();
+    renderApp();
+    renderHeldQuotes();
+  }
+}
+
+function resetCattleInputs() {
+  appState.settings.animalType = "steer";
+  appState.settings.cattleCount = 40;
+  appState.settings.carcassWeight = 350;
+  appState.settings.dieselPrice = 1.70;
+  appState.settings.dieselTimestamp = new Date().toISOString();
+  saveState();
+  initUI();
+  if (hasCalculated) {
+    renderApp();
+  }
+}
+
+function getLatestFactoryQuotes() {
+  const latestMap = {};
+  const sorted = [...appState.priceHistory].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+  
+  sorted.forEach(item => {
+    if (!latestMap[item.factoryId]) {
+      latestMap[item.factoryId] = item;
+    }
+  });
+
+  return latestMap;
+}
+
+function renderApp() {
+  const latestQuotes = getLatestFactoryQuotes();
+  const includeStale = document.getElementById("includeStale").checked;
+  const { animalType, cattleCount, carcassWeight } = appState.settings;
+
+  const factoryResults = [];
+
+  appState.factories.forEach(factory => {
+    const quote = latestQuotes[factory.id];
+    const basePrice = quote ? (animalType === "heifer" ? quote.heiferPrice : quote.steerPrice) : 0;
+    const timestamp = quote ? quote.timestamp : null;
+    const stale = isStale(timestamp);
+
+    const haulagePerHead = calcHaulagePerAnimal(factory.distance);
+    const grossPerHead = basePrice * carcassWeight;
+    const netPerHead = grossPerHead - haulagePerHead;
+    const netTotal = netPerHead * cattleCount;
+
+    factoryResults.push({
+      factory,
+      quote,
+      basePrice,
+      timestamp,
+      stale,
+      haulagePerHead,
+      grossPerHead,
+      netPerHead,
+      netTotal
+    });
+  });
+
+  renderPriceBoard(latestQuotes);
+
+  let eligible = factoryResults.filter(f => f.quote && (!f.stale || includeStale));
+  eligible.sort((a, b) => b.netPerHead - a.netPerHead);
+
+  const rankingsContainer = document.getElementById("rankingsList");
+  rankingsContainer.innerHTML = "";
+
+  if (eligible.length === 0) {
+    rankingsContainer.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:13px;">No valid quotes available for ${animalType}s. Check "Include out-of-date prices" or update factory prices.</div>`;
+    document.getElementById("winnerCard").style.display = "none";
+    document.getElementById("diffBox").style.display = "none";
+    return;
+  }
+
+  document.getElementById("winnerCard").style.display = "block";
+  document.getElementById("diffBox").style.display = "flex";
+
+  const winner = eligible[0];
+  document.getElementById("winnerHeaderType").textContent = `TOP FACTORY (${animalType.toUpperCase()})`;
+  document.getElementById("winnerName").textContent = winner.factory.name;
+  document.getElementById("winnerNetTotal").textContent = `€${Math.round(winner.netTotal).toLocaleString('en-IE')}`;
+  document.getElementById("winnerSubDetails").textContent = `€${winner.netPerHead.toFixed(2)}/head net (${winner.factory.distance}km away)`;
+
+  eligible.forEach((item, index) => {
+    const div = document.createElement("div");
+    div.className = `ranking-item ${index === 0 ? 'rank-1' : ''}`;
+    div.style.cursor = "pointer";
+    div.onclick = () => openAcceptModal(item);
+    
+    div.innerHTML = `
+      <div class="ranking-header">
+        <div class="factory-name">
+          <span class="rank-num">${index + 1}</span>
+          ${item.factory.name}
+        </div>
+        <div style="text-align:right;">
+          <span style="font-weight:800; color:var(--primary); font-size:15px;">€${item.netPerHead.toFixed(2)}</span>
+          <span style="font-size:11px; color:var(--text-muted);">/head net &rsaquo;</span>
+        </div>
+      </div>
+
+      <div class="ranking-metrics">
+        <div>
+          <div class="metric-lbl">Base Price</div>
+          <div class="metric-val">€${item.basePrice.toFixed(2)}</div>
+        </div>
+        <div>
+          <div class="metric-lbl">Gross/Head</div>
+          <div class="metric-val">€${Math.round(item.grossPerHead)}</div>
+        </div>
+        <div>
+          <div class="metric-lbl">Haulage</div>
+          <div class="metric-val">-€${item.haulagePerHead.toFixed(2)}</div>
+        </div>
+        <div>
+          <div class="metric-lbl">Total Net</div>
+          <div class="metric-val">€${Math.round(item.netTotal).toLocaleString('en-IE')}</div>
+        </div>
+      </div>
+      ${item.stale ? `<div class="warning-tag" style="align-self:flex-start;">Out of date – ring to confirm</div>` : ''}
+    `;
+    rankingsContainer.appendChild(div);
+  });
+
+  const lowest = eligible[eligible.length - 1];
+  const diffLowestTotal = winner.netTotal - lowest.netTotal;
+  document.getElementById("diffLowest").textContent = `+€${Math.round(diffLowestTotal).toLocaleString('en-IE')} total`;
+
+  const sortedByDist = [...eligible].sort((a,b) => a.factory.distance - b.factory.distance);
+  const nearest = sortedByDist[0];
+  document.getElementById("nearestName").textContent = nearest.factory.name;
+  
+  const diffNearestTotal = winner.netTotal - nearest.netTotal;
+  document.getElementById("diffNearest").textContent = `+€${Math.round(diffNearestTotal).toLocaleString('en-IE')} total`;
+}
+
+// ACCEPT / ALLOW QUOTE MODAL LOGIC
+function openAcceptModal(item) {
+  selectedQuoteForAccept = item;
+  const { animalType, cattleCount, carcassWeight } = appState.settings;
+
+  document.getElementById("acceptFactoryName").textContent = item.factory.name;
+  document.getElementById("acceptModalBody").innerHTML = `
+    <div style="background:var(--bg-color); padding:12px; border-radius:8px; margin-bottom:12px;">
+      <div><strong>Batch:</strong> ${cattleCount} ${animalType}s (${carcassWeight}kg avg)</div>
+      <div><strong>Base Quote:</strong> €${item.basePrice.toFixed(2)}/kg</div>
+      <div><strong>Haulage Cost:</strong> -€${item.haulagePerHead.toFixed(2)}/head (${item.factory.distance}km)</div>
+      <hr style="margin:8px 0; border:0; border-top:1px solid var(--border-color);">
+      <div><strong>Net Payoff per Animal:</strong> €${item.netPerHead.toFixed(2)}</div>
+      <div style="font-size:16px; font-weight:800; color:var(--primary); margin-top:4px;">
+        Total Net Batch Payout: €${Math.round(item.netTotal).toLocaleString('en-IE')}
+      </div>
+    </div>
+    <p style="font-size:12px; color:var(--text-muted);">
+      Save this choice on this device? Nothing is sent to the factory.
+    </p>
+  `;
+
+  document.getElementById("acceptModal").classList.add("active");
+}
+
+function closeAcceptModal() {
+  document.getElementById("acceptModal").classList.remove("active");
+  selectedQuoteForAccept = null;
+}
+
+function confirmAcceptQuote() {
+  if (selectedQuoteForAccept) {
+    const { animalType, cattleCount, carcassWeight } = appState.settings;
+    const nowIso = new Date().toISOString();
+
+    const heldItem = {
+      id: "held_" + Date.now(),
+      factoryName: selectedQuoteForAccept.factory.name,
+      animalType: animalType,
+      cattleCount: cattleCount,
+      carcassWeight: carcassWeight,
+      basePrice: selectedQuoteForAccept.basePrice,
+      haulagePerHead: selectedQuoteForAccept.haulagePerHead,
+      netPerHead: selectedQuoteForAccept.netPerHead,
+      netTotal: selectedQuoteForAccept.netTotal,
+      timestamp: nowIso
+    };
+
+    appState.heldQuotes.unshift(heldItem);
+    saveState();
+
+    closeAcceptModal();
+    renderHeldQuotes();
+  }
+}
+
+function renderHeldQuotes() {
+  const container = document.getElementById("heldQuotesList");
+  const clearBtn = document.getElementById("clearHeldBtn");
+
+  if (!appState.heldQuotes || appState.heldQuotes.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:12px; color:var(--text-muted); font-size:13px;">
+        No saved choices yet. Tap a factory in the comparison list and choose "Save this choice".
+      </div>`;
+    clearBtn.style.display = "none";
+    return;
+  }
+
+  clearBtn.style.display = "inline-block";
+  container.innerHTML = "";
+
+  appState.heldQuotes.forEach((item, idx) => {
+    const card = document.createElement("div");
+    card.style.cssText = "background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; margin-bottom: 8px; font-size: 13px;";
+    
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <strong style="font-size:14px; color:var(--primary);">${item.factoryName}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">
+            Saved on ${formatIrishDateTime(item.timestamp)}
+          </div>
+        </div>
+        <button class="btn-secondary btn-sm" onclick="deleteHeldQuote('${item.id}')" style="padding:2px 6px; font-size:11px;">Remove</button>
+      </div>
+      <div style="margin-top:6px; display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--card-bg); padding:6px; border-radius:6px; font-size:12px;">
+        <div>Batch: <strong>${item.cattleCount} ${item.animalType}s (${item.carcassWeight}kg)</strong></div>
+        <div>Base: <strong>€${item.basePrice.toFixed(2)}/kg</strong></div>
+        <div>Haulage: <strong>-€${item.haulagePerHead.toFixed(2)}/head</strong></div>
+        <div>Net Total: <strong style="color:var(--primary);">€${Math.round(item.netTotal).toLocaleString('en-IE')}</strong></div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function deleteHeldQuote(id) {
+  appState.heldQuotes = appState.heldQuotes.filter(q => q.id !== id);
+  saveState();
+  renderHeldQuotes();
+}
+
+function clearHeldQuotes() {
+  if (confirm("Clear all saved choices?")) {
+    appState.heldQuotes = [];
+    saveState();
+    renderHeldQuotes();
+  }
+}
+
+// PRICE BOARD RENDERER
+function renderPriceBoard(latestQuotes) {
+  const board = document.getElementById("priceBoardList");
+  board.innerHTML = "";
+
+  appState.factories.forEach(factory => {
+    const q = latestQuotes[factory.id];
+    const stale = q ? isStale(q.timestamp) : true;
+    const formattedDate = q ? formatIrishDateTime(q.timestamp) : "No quote";
+
+    const history = appState.priceHistory
+      .filter(h => h.factoryId === factory.id)
+      .sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    const card = document.createElement("div");
+    card.className = "factory-board-card";
+    
+    card.innerHTML = `
+      <div class="board-header">
+        <div>
+          <div style="font-weight:700; font-size:15px;">${factory.name}</div>
+          <div style="font-size:12px; color:var(--text-muted);">${factory.distance} km from farm • Updated ${formattedDate}</div>
+          ${stale ? `<div class="warning-tag">Out of date – ring to confirm</div>` : ''}
+        </div>
+        <button class="btn-secondary btn-sm" onclick="openUpdateModal('${factory.id}')">Update price</button>
+      </div>
+
+      <div class="board-prices">
+        <div class="price-pill">
+          <span>Steer Base:</span>
+          <strong>${q ? '€' + q.steerPrice.toFixed(2) : '-'}</strong>
+        </div>
+        <div class="price-pill">
+          <span>Heifer Base:</span>
+          <strong>${q ? '€' + q.heiferPrice.toFixed(2) : '-'}</strong>
+        </div>
+      </div>
+
+      <!-- Trend Chart SVG -->
+      ${renderSVGChart(history)}
+
+      <!-- Price History Collapse -->
+      <details style="margin-top:8px; font-size:12px; color:var(--text-muted);">
+        <summary style="cursor:pointer; font-weight:600;">View price log (${history.length})</summary>
+        <div class="history-list">
+          ${[...history].reverse().map(h => `
+            <div class="history-item">
+              <span>${formatIrishDateTime(h.timestamp)}</span>
+              <span>Steer: <strong>€${h.steerPrice.toFixed(2)}</strong> | Heifer: <strong>€${h.heiferPrice.toFixed(2)}</strong></span>
+            </div>
+          `).join('')}
+        </div>
+      </details>
+    `;
+
+    board.appendChild(card);
+  });
+}
+
+function renderSVGChart(history) {
+  if (history.length < 2) return '';
+
+  const width = 300;
+  const height = 35;
+  const steerPrices = history.map(h => h.steerPrice);
+  const minP = Math.min(...steerPrices) - 0.05;
+  const maxP = Math.max(...steerPrices) + 0.05;
+  
+  const points = history.map((h, idx) => {
+    const x = (idx / (history.length - 1)) * width;
+    const y = height - ((h.steerPrice - minP) / (maxP - minP)) * height;
+    return `${x},${y}`;
+  }).join(' ');
+
+  return `
+    <div style="margin-top:6px;">
+      <div style="font-size:10px; color:var(--text-muted); margin-bottom:2px;">Steer Price Trend</div>
+      <svg class="svg-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+        <polyline fill="none" stroke="var(--primary)" stroke-width="2" points="${points}" />
+      </svg>
+    </div>
+  `;
+}
+
+let activeModalFactoryId = null;
+
+function openUpdateModal(factoryId) {
+  activeModalFactoryId = factoryId;
+  const factory = appState.factories.find(f => f.id === factoryId);
+  const latestQuotes = getLatestFactoryQuotes();
+  const q = latestQuotes[factoryId];
+
+  document.getElementById("modalFactoryName").textContent = `Update ${factory.name}`;
+  document.getElementById("modalSteerPrice").value = q ? q.steerPrice.toFixed(2) : "6.50";
+  document.getElementById("modalHeiferPrice").value = q ? q.heiferPrice.toFixed(2) : "6.55";
+
+  document.getElementById("modalError").style.display = "none";
+  document.getElementById("updateModal").classList.add("active");
+}
+
+function closeUpdateModal() {
+  document.getElementById("updateModal").classList.remove("active");
+  activeModalFactoryId = null;
+}
+
+function savePriceUpdate() {
+  const steerPrice = parseFloat(document.getElementById("modalSteerPrice").value);
+  const heiferPrice = parseFloat(document.getElementById("modalHeiferPrice").value);
+
+  const inRange = p => !isNaN(p) && p >= 3.0 && p <= 10.0;
+  if (!inRange(steerPrice) || !inRange(heiferPrice)) {
+    document.getElementById("modalError").style.display = "inline-block";
+    return;
+  }
+  document.getElementById("modalError").style.display = "none";
+
+  const newEntry = {
+    id: "h_" + Date.now(),
+    factoryId: activeModalFactoryId,
+    steerPrice,
+    heiferPrice,
+    timestamp: new Date().toISOString()
+  };
+
+  appState.priceHistory.push(newEntry);
+  saveState();
+  closeUpdateModal();
+  renderApp();
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadState();
+  initUI();
+  renderApp();
+  renderHeldQuotes();
+});
+</script>
+</body>
+</html>
