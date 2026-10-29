@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -491,6 +492,12 @@
       margin-top: 8px;
     }
 
+    @keyframes flashNew {
+      0% { box-shadow: 0 0 0 3px var(--primary); background-color: var(--primary-light); }
+      100% { box-shadow: 0 0 0 0 transparent; }
+    }
+    .flash-new { animation: flashNew 2.2s ease-out; }
+
     footer {
       text-align: center;
       font-size: 12px;
@@ -548,11 +555,11 @@
     <div class="grid-2">
       <div class="form-group">
         <label for="cattleCount">Number of Cattle</label>
-        <input type="number" id="cattleCount" min="1" max="500" oninput="updateSettings()">
+        <input type="number" id="cattleCount" min="1" max="500" placeholder="0" oninput="updateSettings()">
       </div>
       <div class="form-group">
         <label for="carcassWeight">Avg Carcass Weight (kg)</label>
-        <input type="number" id="carcassWeight" min="100" max="700" step="1" oninput="updateSettings()">
+        <input type="number" id="carcassWeight" min="100" max="700" step="1" placeholder="0" oninput="updateSettings()">
         <span class="help-text">Factory deadweight per head</span>
       </div>
     </div>
@@ -560,7 +567,7 @@
     <div class="grid-2">
       <div class="form-group">
         <label for="dieselPrice">Diesel Price (€/L)</label>
-        <input type="number" id="dieselPrice" step="0.01" min="0.50" max="4.00" oninput="updateSettings()">
+        <input type="number" id="dieselPrice" step="0.01" min="0.50" max="4.00" placeholder="0" oninput="updateSettings()">
       </div>
       <div class="form-group">
         <label>Diesel Last Updated</label>
@@ -577,6 +584,8 @@
     <div class="assumptions-box">
       <strong>Assumptions:</strong> Lorry fuel usage: 0.35 L/km (round-trip) | Capacity: 20 cattle/load
     </div>
+
+    <div id="calcError" class="warning-tag" style="display:none; margin-top:12px; color:var(--danger-text); border-color:var(--danger-border); background:var(--danger-bg);"></div>
 
     <!-- CALCULATE ACTION BUTTONS & RESET -->
     <div style="display: flex; gap: 8px; margin-top: 14px;">
@@ -627,8 +636,8 @@
     </div>
   </div>
 
-  <!-- HELD & ACCEPTED QUOTES LOG -->
-  <div class="card">
+  <!-- SAVED CHOICES -->
+  <div class="card" id="savedCard">
     <div class="card-title">
       <span>My saved choices</span>
       <button class="btn-secondary btn-sm" onclick="clearHeldQuotes()" id="clearHeldBtn" style="display:none;">Clear History</button>
@@ -640,8 +649,8 @@
     </div>
   </div>
 
-  <!-- FACTORY PRICE BOARD -->
-  <div class="card">
+  <!-- FACTORY PRICE BOARD (shown after Calculate) -->
+  <div class="card" id="boardCard" style="display:none;">
     <div class="card-title">
       <span>Factory Price Board</span>
       <span style="font-size:11px; font-weight:normal; color:var(--text-muted);">Sample prices – made up</span>
@@ -696,6 +705,7 @@ const STORAGE_KEY = "irish_beef_quote_demo_v3";
 const DAYS_7_MS = 7 * 24 * 60 * 60 * 1000;
 
 let hasCalculated = false;
+let justSavedId = null;
 let selectedQuoteForAccept = null;
 
 const DEFAULT_FACTORIES = [
@@ -752,9 +762,9 @@ let appState = {
 
 // INITIALIZATION & UI SYNC HELPERS
 function initUI() {
-  document.getElementById("cattleCount").value = appState.settings.cattleCount;
-  document.getElementById("carcassWeight").value = appState.settings.carcassWeight;
-  document.getElementById("dieselPrice").value = appState.settings.dieselPrice;
+  document.getElementById("cattleCount").value = appState.settings.cattleCount ?? "";
+  document.getElementById("carcassWeight").value = appState.settings.carcassWeight ?? "";
+  document.getElementById("dieselPrice").value = appState.settings.dieselPrice ?? "";
   
   if (appState.settings.animalType === "heifer") {
     document.getElementById("typeHeifer").checked = true;
@@ -768,35 +778,47 @@ function initUI() {
 
 function updateDieselDateDisplay() {
   const ts = appState.settings.dieselTimestamp;
-  document.getElementById("dieselDateDisplay").textContent = formatIrishDateTime(ts);
+  document.getElementById("dieselDateDisplay").textContent = ts ? formatIrishDateTime(ts) : "Not set";
   const warn = document.getElementById("dieselWarning");
-  if (isStale(ts)) {
+  if (ts && isStale(ts)) {
     warn.style.display = "inline-block";
   } else {
     warn.style.display = "none";
   }
 }
 
+function inputsValid() {
+  const s = appState.settings;
+  return !!(s.cattleCount && s.carcassWeight && s.dieselPrice);
+}
+
 function updateSettings() {
-  const count = parseInt(document.getElementById("cattleCount").value) || 1;
-  const weight = parseFloat(document.getElementById("carcassWeight").value) || 100;
-  const dieselRaw = parseFloat(document.getElementById("dieselPrice").value);
+  const countRaw = parseInt(document.getElementById("cattleCount").value);
+  const weightRaw = parseFloat(document.getElementById("carcassWeight").value);
+  const dieselText = document.getElementById("dieselPrice").value;
+  const dieselRaw = parseFloat(dieselText);
   const animalType = document.querySelector('input[name="animalType"]:checked').value;
 
   const dieselOk = !isNaN(dieselRaw) && dieselRaw >= 0.5 && dieselRaw <= 4.0;
-  document.getElementById("dieselError").style.display = dieselOk ? "none" : "inline-block";
-  if (dieselOk && dieselRaw !== appState.settings.dieselPrice) {
-    appState.settings.dieselPrice = dieselRaw;
-    appState.settings.dieselTimestamp = new Date().toISOString();
-    updateDieselDateDisplay();
+  document.getElementById("dieselError").style.display = (dieselOk || dieselText === "") ? "none" : "inline-block";
+  if (dieselOk) {
+    if (dieselRaw !== appState.settings.dieselPrice || !appState.settings.dieselTimestamp) {
+      appState.settings.dieselPrice = dieselRaw;
+      appState.settings.dieselTimestamp = new Date().toISOString();
+    }
+  } else {
+    appState.settings.dieselPrice = null;
+    appState.settings.dieselTimestamp = null;
   }
+  updateDieselDateDisplay();
 
-  appState.settings.cattleCount = count;
-  appState.settings.carcassWeight = weight;
+  appState.settings.cattleCount = (!isNaN(countRaw) && countRaw >= 1 && countRaw <= 500) ? countRaw : null;
+  appState.settings.carcassWeight = (!isNaN(weightRaw) && weightRaw >= 100 && weightRaw <= 700) ? weightRaw : null;
   appState.settings.animalType = animalType;
 
+  document.getElementById("calcError").style.display = "none";
   saveState();
-  if (hasCalculated) {
+  if (hasCalculated && inputsValid()) {
     renderApp();
   }
 }
@@ -807,13 +829,30 @@ function calcHaulagePerAnimal(distanceKm) {
 }
 
 function calculateAndShowQuotes() {
+  const s = appState.settings;
+  const missing = [];
+  if (!s.cattleCount) missing.push("number of cattle (1 to 500)");
+  if (!s.carcassWeight) missing.push("carcass weight (100 to 700 kg)");
+  if (!s.dieselPrice) missing.push("diesel price (€0.50 to €4.00)");
+  const err = document.getElementById("calcError");
+  if (missing.length) {
+    err.textContent = "Please enter: " + missing.join(", ") + ".";
+    err.style.display = "inline-block";
+    return;
+  }
+  err.style.display = "none";
   hasCalculated = true;
   document.getElementById("resultsArea").style.display = "block";
+  document.getElementById("boardCard").style.display = "block";
   renderApp();
   document.getElementById("resultsArea").scrollIntoView({ behavior: 'smooth' });
 }
 
 function applyDemoScenario(type) {
+  const st = appState.settings;
+  if (!st.cattleCount) st.cattleCount = 40;
+  if (!st.carcassWeight) st.carcassWeight = 350;
+  if (!st.dieselPrice) { st.dieselPrice = 1.70; st.dieselTimestamp = relativeIsoDate(2, 14, 0); }
   if (type === 'default') {
     appState.settings.animalType = 'steer';
     appState.settings.cattleCount = 40;
@@ -872,7 +911,7 @@ function loadState() {
         appState = parsed;
         if (!appState.heldQuotes) appState.heldQuotes = [];
         
-        if (!appState.settings.dieselTimestamp) {
+        if (!appState.settings.dieselTimestamp && appState.settings.dieselPrice) {
           appState.settings.dieselTimestamp = appState.settings.dieselDate 
             ? new Date(appState.settings.dieselDate).toISOString() 
             : relativeIsoDate(2);
@@ -926,15 +965,16 @@ function confirmReset() {
 
 function resetCattleInputs() {
   appState.settings.animalType = "steer";
-  appState.settings.cattleCount = 40;
-  appState.settings.carcassWeight = 350;
-  appState.settings.dieselPrice = 1.70;
-  appState.settings.dieselTimestamp = new Date().toISOString();
+  appState.settings.cattleCount = null;
+  appState.settings.carcassWeight = null;
+  appState.settings.dieselPrice = null;
+  appState.settings.dieselTimestamp = null;
+  hasCalculated = false;
+  document.getElementById("resultsArea").style.display = "none";
+  document.getElementById("boardCard").style.display = "none";
+  document.getElementById("calcError").style.display = "none";
   saveState();
   initUI();
-  if (hasCalculated) {
-    renderApp();
-  }
 }
 
 function getLatestFactoryQuotes() {
@@ -982,6 +1022,7 @@ function renderApp() {
   });
 
   renderPriceBoard(latestQuotes);
+  if (!inputsValid()) return;
 
   let eligible = factoryResults.filter(f => f.quote && (!f.stale || includeStale));
   eligible.sort((a, b) => b.netPerHead - a.netPerHead);
@@ -1110,7 +1151,9 @@ function confirmAcceptQuote() {
     saveState();
 
     closeAcceptModal();
+    justSavedId = heldItem.id;
     renderHeldQuotes();
+    document.getElementById("savedCard").scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
 
@@ -1132,6 +1175,7 @@ function renderHeldQuotes() {
 
   appState.heldQuotes.forEach((item, idx) => {
     const card = document.createElement("div");
+    if (item.id === justSavedId) card.classList.add("flash-new");
     card.style.cssText = "background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; margin-bottom: 8px; font-size: 13px;";
     
     card.innerHTML = `
